@@ -177,3 +177,113 @@ async function logVisit(city, lat, lon) {
     console.log('Error logging visit:', error);
   }
 }
+
+let alertsEnabled = false;
+let lastCheckedLat = null;
+let lastCheckedLon = null;
+let watchId = null;
+
+const enableAlertsBtn = document.getElementById("enableAlertsBtn");
+
+enableAlertsBtn.addEventListener("click", async () => {
+  if (!alertsEnabled) {
+    // Ask for notification permission
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      alert("Notifications permission is needed for live weather alerts.");
+      return;
+    }
+
+    // Start watching location
+    watchId = navigator.geolocation.watchPosition(
+      handleLocationUpdate,
+      (error) => {
+        console.error("Geolocation error:", error);
+      },
+      { enableHighAccuracy: true, maximumAge: 0 }
+    );
+
+    alertsEnabled = true;
+    enableAlertsBtn.textContent = "Disable Live Weather Alerts";
+  } else {
+    // Turn off
+    navigator.geolocation.clearWatch(watchId);
+    alertsEnabled = false;
+    lastCheckedLat = null;
+    lastCheckedLon = null;
+    enableAlertsBtn.textContent = "Enable Live Weather Alerts";
+  }
+});
+
+function getDistanceKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Earth's radius in km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+const ALERT_DISTANCE_THRESHOLD_KM = 0.01;
+
+function handleLocationUpdate(position) {
+  const { latitude, longitude } = position.coords;
+
+  if (lastCheckedLat === null || lastCheckedLon === null) {
+    // First reading since alerts were enabled — check immediately
+    lastCheckedLat = latitude;
+    lastCheckedLon = longitude;
+    checkWeatherForAlerts(latitude, longitude);
+    return;
+  }
+
+  const distance = getDistanceKm(lastCheckedLat, lastCheckedLon, latitude, longitude);
+
+  if (distance >= ALERT_DISTANCE_THRESHOLD_KM) {
+    lastCheckedLat = latitude;
+    lastCheckedLon = longitude;
+    checkWeatherForAlerts(latitude, longitude);
+  }
+  // else: not far enough yet, do nothing — coordinates discarded, nothing stored beyond lastCheckedLat/Lon
+}
+
+async function checkWeatherForAlerts(lat, lon) {
+  try {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
+    );
+    if (!response.ok) return;
+
+    const data = await response.json();
+    evaluateWeatherConditions(data);
+  } catch (error) {
+    console.error("Error checking weather for alerts:", error);
+  }
+  // Note: lat/lon are only used in this function call — nothing is stored beyond this point
+}
+
+function evaluateWeatherConditions(data) {
+  const condition = data.weather[0].main; // e.g. "Rain", "Thunderstorm", "Clear"
+  const temp = data.main.temp;
+  const windSpeedKmh = data.wind.speed * 3.6;
+  const locationName = data.name;
+
+  if (condition === "Rain" || condition === "Thunderstorm") {
+    sendWeatherNotification(`Rain expected near ${locationName}`, "You may want to carry an umbrella.");
+  } else if (temp >= 40) {
+    sendWeatherNotification(`Extreme heat near ${locationName}`, `Temperature is ${Math.round(temp)}°C. Stay hydrated.`);
+  } else if (temp <= 5) {
+    sendWeatherNotification(`Cold conditions near ${locationName}`, `Temperature is ${Math.round(temp)}°C.`);
+  } else if (windSpeedKmh >= 40) {
+    sendWeatherNotification(`High winds near ${locationName}`, `Wind speed is ${Math.round(windSpeedKmh)} km/h.`);
+  }
+  // else: normal conditions, no alert needed
+}
+
+function sendWeatherNotification(title, body) {
+  new Notification(title, { body });
+}
