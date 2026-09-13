@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Weather app</title>
+</head>
+<body>
+  <div class="main-box">
+
+    <header class="heading">
+        <div class="name">Megh</div>
+        <i class="fa-solid fa-cloud"></i>
+    </header>
+
+    <div class="search-section">
+        <input class="search-box" id="cityInput" type="text" placeholder="Enter city name...">
+        <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <button class="location-button" id="locationBtn"><i class="fa-solid fa-location-dot"></i></button>
+    </div>
+
+    <!-- shown until first successful search -->
+    <p class="placeholder-text" id="placeholderText">Search a city to see the weather</p>
+
+    <!-- shown while fetch is in progress -->
+    <p class="loading-text" id="loadingText">Loading...</p>
+
+    <!-- shown if city not found / fetch fails -->
+    <p class="error-text" id="errorText">City not found. Try again.</p>
+
+    <div class="weather-all-info" id="weatherAllInfo">
+      <div class="country" id="country">Country</div>
+      <div class="city" id="city">City</div>
+      <img class="weather-icon-main" id="weatherIconMain" src="" alt="weather icon">
+      <div class="temperature"><span id="temperature">--</span>°C</div>
+      <div class="weather" id="weatherDesc">Weather Condition</div>
+
+      <div class="stats">
+        <div class="humidity">Humidity: <span id="humidity">--</span>%</div>
+        <div class="wind-speed">Wind: <span id="windSpeed">--</span> km/h</div>
+        <div class="pressure">Pressure: <span id="pressure">--</span> hPa</div>
+        <div class="visibility">Visibility: <span id="visibility">--</span> km</div>
+      </div>
+    </div>
+
+    <div class="forecast-section" id="forecastSection">
+        <div class="forecast-title">5-Day Weather Forecast</div>
+        <div class="forecast-list" id="forecastList">
+          <!-- JS will generate 5 .forecast-card divs in here -->
+        </div>
+    </div>
+
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

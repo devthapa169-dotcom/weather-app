@@ -1,0 +1,152 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #2b5876, #4e4376);
+}
+
+.main-box {
+  width: 100%;
+  max-width: 380px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 25px;
+  color: #fff;
+}
+
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.search-section {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 0;   /* add this line */
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  font-size: 14px;
+}
+
+.search-section button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  background: #fff;
+  color: #2b5876;
+  cursor: pointer;
+}
+
+.placeholder-text,
+.loading-text,
+.error-text {
+  text-align: center;
+  padding: 30px 0;
+  opacity: 0.9;
+  display: none; /* JS shows the right one at the right time */
+}
+
+.error-text {
+  color: #ffd6d6;
+}
+
+.weather-all-info {
+  display: none; /* JS sets to 'flex' once data loads */
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.country {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.city {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.weather-icon-main {
+  width: 80px;
+  height: 80px;
+}
+
+.temperature {
+  font-size: 42px;
+  font-weight: 300;
+}
+
+.weather {
+  text-transform: capitalize;
+  margin-bottom: 15px;
+  opacity: 0.9;
+}
+
+.stats {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  font-size: 13px;
+  border-top: 1px solid rgba(255,255,255,0.3);
+  padding-top: 12px;
+}
+
+.forecast-section {
+  display: none; /* JS shows once forecast data is ready */
+}
+
+.forecast-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  opacity: 0.9;
+}
+
+.forecast-list {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.forecast-card {
+  flex: 1;
+  background: rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 10px 4px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.forecast-card .weather-icon {
+  width: 35px;
+  height: 35px;
+}
+
+.forecast-card .temp {
+  font-weight: 600;
+  margin-top: 4px;
+}
