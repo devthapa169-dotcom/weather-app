@@ -26,7 +26,6 @@ searchBtn.addEventListener("click", () => {
 
   getWeather(city);
   getForecast(city);
-  alert(`At search time: ${userLat}, ${userLon}`);
   logVisit(city, userLat, userLon);
   
 });
