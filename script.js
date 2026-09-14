@@ -205,15 +205,19 @@ enableAlertsBtn.addEventListener("click", async () => {
     }
     // ... rest stays the same
     // Start watching location
-    watchId = navigator.geolocation.watchPosition(
-      handleLocationUpdate,
-      (error) => {
-        debugLog("Geolocation error: " + error.message);
-      },
-      { enableHighAccuracy: true, maximumAge: 0 }
-    );
-    debugLog("watchPosition started, watchId: " + watchId);
-
+debugLog("About to call watchPosition...");
+try {
+  watchId = navigator.geolocation.watchPosition(
+    handleLocationUpdate,
+    (error) => {
+      debugLog("Geolocation error: " + error.message + " (code: " + error.code + ")");
+    },
+    { enableHighAccuracy: true, maximumAge: 0 }
+  );
+  debugLog("watchPosition call completed, watchId: " + watchId);
+} catch (err) {
+  debugLog("watchPosition threw: " + err.message);
+}
     alertsEnabled = true;
     enableAlertsBtn.textContent = "Disable Live Weather Alerts";
   } else {
