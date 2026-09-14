@@ -208,10 +208,11 @@ enableAlertsBtn.addEventListener("click", async () => {
     watchId = navigator.geolocation.watchPosition(
       handleLocationUpdate,
       (error) => {
-        console.error("Geolocation error:", error);
+        debugLog("Geolocation error: " + error.message);
       },
       { enableHighAccuracy: true, maximumAge: 0 }
     );
+    debugLog("watchPosition started, watchId: " + watchId);
 
     alertsEnabled = true;
     enableAlertsBtn.textContent = "Disable Live Weather Alerts";
@@ -242,9 +243,10 @@ const ALERT_DISTANCE_THRESHOLD_KM = 0.01;
 
 function handleLocationUpdate(position) {
   const { latitude, longitude } = position.coords;
+  debugLog("Location update: " + latitude + ", " + longitude);
 
   if (lastCheckedLat === null || lastCheckedLon === null) {
-    // First reading since alerts were enabled — check immediately
+    debugLog("First reading - checking weather now");
     lastCheckedLat = latitude;
     lastCheckedLon = longitude;
     checkWeatherForAlerts(latitude, longitude);
@@ -252,28 +254,31 @@ function handleLocationUpdate(position) {
   }
 
   const distance = getDistanceKm(lastCheckedLat, lastCheckedLon, latitude, longitude);
+  debugLog("Distance from last check: " + distance.toFixed(4) + " km");
 
   if (distance >= ALERT_DISTANCE_THRESHOLD_KM) {
+    debugLog("Threshold crossed - checking weather");
     lastCheckedLat = latitude;
     lastCheckedLon = longitude;
     checkWeatherForAlerts(latitude, longitude);
   }
-  // else: not far enough yet, do nothing — coordinates discarded, nothing stored beyond lastCheckedLat/Lon
 }
 
 async function checkWeatherForAlerts(lat, lon) {
+  debugLog("Fetching weather for alert check...");
   try {
     const response = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
     );
+    debugLog("Weather fetch status: " + response.status);
     if (!response.ok) return;
 
     const data = await response.json();
+    debugLog("Condition: " + data.weather[0].main + ", Temp: " + data.main.temp);
     evaluateWeatherConditions(data);
   } catch (error) {
-    console.error("Error checking weather for alerts:", error);
+    debugLog("Fetch error: " + error.message);
   }
-  // Note: lat/lon are only used in this function call — nothing is stored beyond this point
 }
 
 function evaluateWeatherConditions(data) {
