@@ -1,3 +1,10 @@
+function debugLog(message) {
+  const debugDiv = document.getElementById("debugLog");
+  if (debugDiv) {
+    debugDiv.innerHTML += message + "<br>";
+  }
+}
+
 const apiKey = "6b7c1aac535bc97fe25979f36cae2d97"; // paste your OpenWeather key here
 
 const cityInput = document.getElementById("cityInput");
@@ -183,17 +190,20 @@ let lastCheckedLat = null;
 let lastCheckedLon = null;
 let watchId = null;
 
-const enableAlertsBtn = document.getElementById("enableAlertsBtn");
-
 enableAlertsBtn.addEventListener("click", async () => {
+  debugLog("Button clicked");
+  debugLog("Notification support: " + ("Notification" in window));
+  
   if (!alertsEnabled) {
-    // Ask for notification permission
+    debugLog("Requesting permission...");
     const permission = await Notification.requestPermission();
+    debugLog("Permission result: " + permission);
+    
     if (permission !== "granted") {
       alert("Notifications permission is needed for live weather alerts.");
       return;
     }
-
+    // ... rest stays the same
     // Start watching location
     watchId = navigator.geolocation.watchPosition(
       handleLocationUpdate,
